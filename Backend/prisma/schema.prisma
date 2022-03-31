@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//model user
+//ID
+//Nome completo
+//senha
+//confirmação de senha
+//e-mail Unique
+//createdAt
+//updatedAt
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  image     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tables    Table[]
+
+  @@map("user")
+}
+
+model Table {
+  id        String   @id @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  itens     Pedido[]
+
+  @@map("table")
+}
+
+model Menu {
+  id          Int      @id @unique @default(autoincrement())
+  name        String
+  price       Float
+  description String
+  quant       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  table       Pedido[]
+
+  @@map("menu")
+}
+
+model Pedido {
+  id Int @id @unique @default(autoincrement())
+
+  Menu   Menu? @relation(fields: [menuId], references: [id])
+  menuId Int?
+  Table   Table?  @relation(fields: [tableId], references: [id])
+  tableId String?
+
+   @@map("pedido")
+}
